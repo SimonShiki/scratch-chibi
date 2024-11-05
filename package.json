@@ -29,7 +29,7 @@
     "@gera2ld/plaid": "~2.7.0",
     "@gera2ld/plaid-rollup": "~2.7.0",
     "@rollup/plugin-image": "^3.0.3",
-    "@unocss/postcss": "^0.63.6",
+    "@unocss/postcss": "^0.64.0",
     "@violentmonkey/types": "^0.2.0",
     "babel-preset-solid": "^1.8.16",
     "cross-env": "^7.0.3",
