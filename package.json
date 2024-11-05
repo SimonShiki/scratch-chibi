@@ -33,7 +33,7 @@
     "@violentmonkey/types": "^0.2.0",
     "babel-preset-solid": "^1.8.16",
     "cross-env": "^7.0.3",
-    "del-cli": "^5.1.0",
+    "del-cli": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.4.0",
     "eslint": "8.57.1",
