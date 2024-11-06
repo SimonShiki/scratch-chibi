@@ -36,7 +36,7 @@
     "del-cli": "^5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.4.0",
-    "eslint": "8.57.1",
+    "eslint": "9.14.0",
     "eslint-plugin-solid": "^0.14.3",
     "husky": "^9.0.11",
     "read-package-up": "^11.0.0",
