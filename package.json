@@ -37,7 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.4.0",
     "eslint": "8.57.1",
-    "eslint-plugin-solid": "^0.14.3",
+    "eslint-plugin-solid": "^0.14.4",
     "husky": "^9.0.11",
     "read-package-up": "^11.0.0",
     "rollup-plugin-serve": "^1.1.1",

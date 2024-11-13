@@ -55,8 +55,8 @@ importers:
         specifier: 8.57.1
         version: 8.57.1
       eslint-plugin-solid:
-        specifier: ^0.14.3
-        version: 0.14.3(eslint@8.57.1)(typescript@5.6.3)
+        specifier: ^0.14.4
+        version: 0.14.4(eslint@8.57.1)(typescript@5.6.3)
       husky:
         specifier: ^9.0.11
         version: 9.1.6
@@ -1305,12 +1305,6 @@ packages:
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0
 
-  '@typescript-eslint/utils@8.12.2':
-    resolution: {integrity: sha512-UTTuDIX3fkfAz6iSVa5rTuSfWIYZ6ATtEocQ/umkRSyC9O919lbZ8dcH7mysshrCdrAM03skJOEYaBugxN+M6A==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-    peerDependencies:
-      eslint: ^8.57.0 || ^9.0.0
-
   '@typescript-eslint/utils@8.13.0':
     resolution: {integrity: sha512-A1EeYOND6Uv250nybnLZapeXpYMl8tkzYUxqmoKAWnI4sei3ihf2XdZVd+vVOmHGcp3t+P7yRrNsyyiXTvShFQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1965,8 +1959,8 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-solid@0.14.3:
-    resolution: {integrity: sha512-eDeyPrijSjVGeyb4oKoyidgLlMDZwAg/YdxiY9QvGXl2kLgpcHvLpgpaGK4KJ8xSsg0ym3B2dPRBAIlT7iUrEQ==}
+  eslint-plugin-solid@0.14.4:
+    resolution: {integrity: sha512-uWsNA2okBgwBRPxjsQ7DxlRksq1EKdMhwQlViHdkkRDLnWqwnZEjQASWeckZ0DI24sVzPeETJhPv1BWKKiu99A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
@@ -4776,17 +4770,6 @@ snapshots:
       - supports-color
       - typescript
 
-  '@typescript-eslint/utils@8.12.2(eslint@8.57.1)(typescript@5.6.3)':
-    dependencies:
-      '@eslint-community/eslint-utils': 4.4.1(eslint@8.57.1)
-      '@typescript-eslint/scope-manager': 8.12.2
-      '@typescript-eslint/types': 8.12.2
-      '@typescript-eslint/typescript-estree': 8.12.2(typescript@5.6.3)
-      eslint: 8.57.1
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
   '@typescript-eslint/utils@8.13.0(eslint@8.57.1)(typescript@5.6.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@8.57.1)
@@ -5754,9 +5737,9 @@ snapshots:
     optionalDependencies:
       eslint-config-prettier: 9.1.0(eslint@8.57.1)
 
-  eslint-plugin-solid@0.14.3(eslint@8.57.1)(typescript@5.6.3):
+  eslint-plugin-solid@0.14.4(eslint@8.57.1)(typescript@5.6.3):
     dependencies:
-      '@typescript-eslint/utils': 8.12.2(eslint@8.57.1)(typescript@5.6.3)
+      '@typescript-eslint/utils': 8.13.0(eslint@8.57.1)(typescript@5.6.3)
       eslint: 8.57.1
       estraverse: 5.3.0
       is-html: 2.0.0
