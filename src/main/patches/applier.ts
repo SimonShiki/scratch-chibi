@@ -204,15 +204,21 @@ function getUnsupportedAPI (vm: DucktypedVM) {
  * @param ctx The Eureka context.
  */
 export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
+    const isTurboWarp = typeof vm.runtime.compilerOptions === 'object' && typeof vm.exports === 'object';
+    const isClipCC = typeof vm.ccExtensionManager === 'object';
+
     if (settings.mixins['vm.extensionManager.loadExtensionURL']) {
         MixinApplicator.applyTo(
             vm.extensionManager,
             {
                 loadExtensionURL (originalMethod, extensionURL) {
+                    // the extensionURL can both be an URL or an ID despite is not built-in.
+                    // It may happen if the extension is loaded once and then saved in the project.
                     if (ctx.idToURLMapping.has(extensionURL)) {
                         extensionURL = ctx.idToURLMapping.get(extensionURL)!;
                     }
 
+                    // We always care those declared extensions, otherwise we just pass it to the original method.
                     if (settings.behavior.redirectDeclared &&
                         ctx.declaredIds.includes(extensionURL) &&
                         !loadedExtensions.has(extensionURL)) {
@@ -249,6 +255,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
         );
     }
 
+    // Sideloaded extensions should be refreshed by us, since they're not managed in the extension manager.
     if (settings.mixins['vm.extensionManager.refreshBlocks']) {
         MixinApplicator.applyTo(
             vm.extensionManager,
@@ -261,6 +268,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
         );
     }
 
+    // Inject eureka extension's info into the project data
     if (settings.mixins['vm.toJSON']) {
         MixinApplicator.applyTo(
             vm,
@@ -285,6 +293,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
                                 if (!block.opcode) continue;
                                 const extensionId = getExtensionIdForOpcode(block.opcode);
                                 if (!extensionId) continue;
+                                // Convert sideloaded blocks to procedures_call
                                 if (sideloadIds.includes(extensionId)) {
                                     const mutation = block.mutation ? JSON.stringify(block.mutation) : null;
                                     if (!('mutation' in block)) block.mutation = {};
@@ -297,6 +306,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
                                 }
                             }
                         }
+                        // Separate sideloaded monitors from normal monitors, since VM loaded them as well
                         for (const i in obj.monitors) {
                             const monitor = obj.monitors[i];
                             if (!monitor.opcode) continue;
@@ -316,9 +326,11 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
                             const extensionId = getExtensionIdForOpcode(block.opcode);
                             if (!extensionId) continue;
                             if (sideloadIds.includes(extensionId)) {
+                                const mutation = block.mutation ? JSON.stringify(block.mutation) : null;
                                 if (!('mutation' in block)) block.mutation = {};
                                 block.mutation.proccode = `[📎 Sideload] ${block.opcode}`;
                                 block.mutation.children = [];
+                                if (mutation) block.mutation.mutation = mutation;
                                 block.mutation.tagName = 'mutation';
 
                                 block.opcode = 'procedures_call';
@@ -334,6 +346,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
         );
     }
 
+    // pre-declare sideloaded extensions
     if (settings.mixins['vm.deserializeProject']) {
         MixinApplicator.applyTo(
             vm,
@@ -479,6 +492,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
         );
     }
 
+    // Make eureka follow editor's locale change
     if (settings.mixins['vm.setLocale']) {
         MixinApplicator.applyTo(
             vm,
@@ -492,6 +506,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
         );
     }
 
+    // Allow to check if eureka exists
     if (settings.mixins['vm.runtime._primitives.argument_reporter_boolean']) {
         MixinApplicator.applyTo(
             vm.runtime._primitives,
@@ -540,7 +555,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
     }
 
     // ClipCC specific patches, to make sideloaded extension a ClipCC extension
-    if (typeof vm.ccExtensionManager === 'object') {
+    if (isClipCC) {
         if (settings.mixins['vm.ccExtensionManager.getExtensionLoadOrder']) {
             MixinApplicator.applyTo(
                 vm.ccExtensionManager,
@@ -587,6 +602,8 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
             optional: true
         };
 
+        // ClipCC's `extension` field is quite different and not handled by `toJSON`,
+        // so we register a ClipCC extension to make it work.
         vm.ccExtensionManager.instance.__eureka = {
             beforeProjectSave ({projectData}: CCXSaveData) {
                 // Create a Record of extension's id - extension's url from loadedExtensions
@@ -633,66 +650,69 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
     }
 
     // Turbowarp extension's polyfill
-    if (settings.mixins['vm.runtime._convertForScratchBlocks']) {
-        MixinApplicator.applyTo(
-            vm.runtime,
-            {
-                _convertForScratchBlocks (originalMethod, blockInfo, categoryInfo) {
-                    if (typeof blockInfo !== 'string') {
-                        switch (blockInfo.blockType) {
-                        case BlockType.LABEL:
-                            return {
-                                info: blockInfo,
-                                xml: `<label text="${xmlEscape(blockInfo.text)}"/>`
-                            };
-                        case BlockType.XML:
-                            return {
-                                info: blockInfo,
-                                xml: blockInfo.xml
-                            };
-                        default: {
-                            if ('extensions' in blockInfo) {
-                                const converted = originalMethod?.(blockInfo, categoryInfo);
-                                if (!('extensions' in converted.json)) {
-                                    converted.json.extensions = [/* 'scratch_extension'*/];
-                                }
-                                for (const extension of blockInfo.extensions!) {
-                                    if (!converted.json.extensions.includes(extension)) {
-                                        converted.json.extensions.push(extension);
+    if (!isTurboWarp) {
+        if (settings.mixins['vm.runtime._convertForScratchBlocks']) {
+            MixinApplicator.applyTo(
+                vm.runtime,
+                {
+                    _convertForScratchBlocks (originalMethod, blockInfo, categoryInfo) {
+                        if (typeof blockInfo !== 'string') {
+                            switch (blockInfo.blockType) {
+                            case BlockType.LABEL:
+                                return {
+                                    info: blockInfo,
+                                    xml: `<label text="${xmlEscape(blockInfo.text)}"/>`
+                                };
+                            case BlockType.XML:
+                                return {
+                                    info: blockInfo,
+                                    xml: blockInfo.xml
+                                };
+                            default: {
+                                if ('extensions' in blockInfo) {
+                                    const converted = originalMethod?.(blockInfo, categoryInfo);
+                                    if (!('extensions' in converted.json)) {
+                                        converted.json.extensions = [/* 'scratch_extension'*/];
                                     }
+                                    for (const extension of blockInfo.extensions!) {
+                                        if (!converted.json.extensions.includes(extension)) {
+                                            converted.json.extensions.push(extension);
+                                        }
+                                    }
+                                    return converted;
                                 }
-                                return converted;
+                                return originalMethod?.(blockInfo, categoryInfo);
                             }
-                            return originalMethod?.(blockInfo, categoryInfo);
+                            }
                         }
+                        return originalMethod?.(blockInfo, categoryInfo);
+                    }
+                }
+            );
+        }
+
+        if (settings.mixins['vm.runtime._convertButtonForScratchBlocks']) {
+            MixinApplicator.applyTo(
+                vm.runtime,
+                {
+                    _convertButtonForScratchBlocks (originalMethod, buttonInfo, categoryInfo) {
+                        if (ctx.blocks && buttonInfo.func && !predefinedCallbackKeys.includes(buttonInfo.func)) {
+                            const workspace = window.Blockly.getMainWorkspace();
+                            const extensionMessageContext = this.makeMessageContextForTarget();
+                            const buttonText = maybeFormatMessage(buttonInfo.text, extensionMessageContext)!;
+
+                            workspace.registerButtonCallback(
+                                `${categoryInfo.id}_${buttonInfo.func}`, buttonInfo.callFunc);
+                            return {
+                                info: buttonInfo,
+                                // eslint-disable-next-line max-len
+                                xml: `<button text="${xmlEscape(buttonText)}" callbackKey="${xmlEscape(`${categoryInfo.id}_${buttonInfo.func}`)}"></button>`
+                            };
                         }
+                        return originalMethod?.(buttonInfo, categoryInfo);
                     }
-                    return originalMethod?.(blockInfo, categoryInfo);
                 }
-            }
-        );
-    }
-
-    if (settings.mixins['vm.runtime._convertButtonForScratchBlocks']) {
-        MixinApplicator.applyTo(
-            vm.runtime,
-            {
-                _convertButtonForScratchBlocks (originalMethod, buttonInfo, categoryInfo) {
-                    if (ctx.blocks && buttonInfo.func && !predefinedCallbackKeys.includes(buttonInfo.func)) {
-                        const workspace = window.Blockly.getMainWorkspace();
-                        const extensionMessageContext = this.makeMessageContextForTarget();
-                        const buttonText = maybeFormatMessage(buttonInfo.text, extensionMessageContext)!;
-
-                        workspace.registerButtonCallback(`${categoryInfo.id}_${buttonInfo.func}`, buttonInfo.callFunc);
-                        return {
-                            info: buttonInfo,
-                            // eslint-disable-next-line max-len
-                            xml: `<button text="${xmlEscape(buttonText)}" callbackKey="${xmlEscape(`${categoryInfo.id}_${buttonInfo.func}`)}"></button>`
-                        };
-                    }
-                    return originalMethod?.(buttonInfo, categoryInfo);
-                }
-            }
-        );
+            );
+        }
     }
 }

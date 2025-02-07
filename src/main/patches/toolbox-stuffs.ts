@@ -28,7 +28,7 @@ export function injectToolbox (xmlList: HTMLElement[], workspace: DucktypedBlock
     });
     xmlList.push(dashboardButton);
 
-    // Add eureka detection
+    // Add eureka detection block
     const mutation = document.createElement('mutation');
     mutation.setAttribute('eureka', 'installed');
     const field = document.createElement('field');

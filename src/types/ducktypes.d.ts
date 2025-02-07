@@ -80,6 +80,10 @@ interface DucktypedVM {
     on (eventName: string, callback: (...args: any[]) => any): void;
     emit (eventName: string, ...args: any[]): void;
     runtime: {
+        compilerOptions?: {
+            enabled: boolean;
+            warpTimer: boolean;
+        };
         _primitives: {
             argument_reporter_boolean (
                 args: {
