@@ -43,7 +43,7 @@
     "eslint-plugin-solid": "^0.14.5",
     "husky": "^9.1.7",
     "read-package-up": "^11.0.0",
-    "rollup-plugin-serve": "^1.1.1",
+    "rollup-plugin-serve": "^3.0.0",
     "rollup-plugin-userscript": "^0.3.7",
     "typescript": "^5.7.3",
     "unocss": "^65.4.3",
