@@ -30,4 +30,6 @@
 // @version     process.env.VERSION
 // @author      process.env.AUTHOR
 // @require     
+// @updateURL   https://github.com/EurekaScratch/eureka/releases/latest/download/eureka-meta.user.js
+// @downloadURL   https://github.com/EurekaScratch/eureka/releases/latest/download/eureka.user.js
 // ==/UserScript==

@@ -260,9 +260,9 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
         MixinApplicator.applyTo(
             vm.extensionManager,
             {
-                async refreshBlocks (originalMethod) {
-                    const result = await originalMethod?.();
-                    return [...result, await refreshForwardedBlocks()];
+                async refreshBlocks (originalMethod, optExtensionId) {
+                    const result = await originalMethod?.(optExtensionId);
+                    return [...result, refreshForwardedBlocks()];
                 }
             }
         );

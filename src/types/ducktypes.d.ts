@@ -75,7 +75,7 @@ interface DucktypedVM {
     }
     extensionManager: {
         loadExtensionURL(extensionURL: string): Promise<void>;
-        refreshBlocks (): Promise<void[]>;
+        refreshBlocks (optExtensionId?: string): Promise<void[]>;
     }
     on (eventName: string, callback: (...args: any[]) => any): void;
     emit (eventName: string, ...args: any[]): void;
