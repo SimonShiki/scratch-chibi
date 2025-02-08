@@ -5632,10 +5632,10 @@ micromatch@^4.0.4, micromatch@^4.0.8:
     braces "^3.0.3"
     picomatch "^2.3.1"
 
-mime@^2:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-2.6.0.tgz#a2a682a95cd4d0cb1d6257e28f83da7e35800367"
-  integrity sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==
+mime@^4:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-4.0.6.tgz#ca83bec0bcf2a02353d0e02da99be05603d04839"
+  integrity sha512-4rGt7rvQHBbaSOF9POGkk1ocRP16Md1x36Xma8sz8h8/vfCUI2OtEIeCqe4Ofes853x4xDoPiFLIT47J5fI/7A==
 
 mimic-fn@^2.1.0:
   version "2.1.0"
@@ -6659,12 +6659,12 @@ rollup-plugin-postcss@^4.0.2:
     safe-identifier "^0.4.2"
     style-inject "^0.3.0"
 
-rollup-plugin-serve@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-1.1.1.tgz#bc06363a23d0a207f61f9b2bed8100a539481cbd"
-  integrity sha512-H0VarZRtFR0lfiiC9/P8jzCDvtFf1liOX4oSdIeeYqUCKrmFA7vNiQ0rg2D+TuoP7leaa/LBR8XBts5viF6lnw==
+rollup-plugin-serve@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-3.0.0.tgz#e18bca98d4d2aa1979e319478b2e25c77a7722eb"
+  integrity sha512-DjVRhbwC0OgP1Q1sj8Lvx12ee60UTZM767kkjT61sYKHw/wLpANAw3VZN5ZMa5NlvO8bYpfTaqiUrW+icAjXFg==
   dependencies:
-    mime "^2"
+    mime "^4"
     opener "1"
 
 rollup-plugin-userscript@^0.3.7:
