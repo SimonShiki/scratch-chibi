@@ -74,14 +74,37 @@ function getExtensionIdForOpcode (opcode: string): string {
 }
 
 /**
+ * Refresh the toolbox of a workspace.
+ * @param workspace The workspace to refresh the toolbox of.
+ * @param isModernBlockly Whether the workspace is using modern Blockly.
+ */
+function refreshToolbox (workspace?: DucktypedBlocksWorkspace, isModernBlockly?: boolean) {
+    if (!workspace) {
+        log.error(formatMessage({
+            id: 'eureka.applier.failedToRefreshToolbox',
+            default: 'Failed to refresh toolbox: workspace is undefined'
+        }));
+        return;
+    }
+
+    if (isModernBlockly) {
+        workspace.getToolbox().forceRerender();
+    } else {
+        workspace.getToolbox().refreshSelection();
+        workspace.toolboxRefreshEnabled_ = true;
+    }
+}
+
+/**
  * Apply scratch-blocks-related patches.
  * @param blocks The ScratchBlocks instance.
  */
 export function applyPatchesForBlocks (blocks?: DucktypedScratchBlocks) {
+    const isModernBlockly = blocks.__esModule;
     // Add eureka's toolbox stuffs
     if (blocks) {
         if (settings.mixins['blocks.Procedures.addCreateButton_']) {
-            if (blocks.__esModule) {
+            if (isModernBlockly) {
                 log.info(formatMessage({
                     id: 'eureka.modernBlocklyDetected',
                     default: 'Modern blockly detected'
@@ -171,14 +194,8 @@ export function applyPatchesForBlocks (blocks?: DucktypedScratchBlocks) {
     }
 
     const workspace = (blocks ?? globalThis.Blockly).getMainWorkspace?.();
-    if (!workspace) {
-        log.error(formatMessage({
-            id: 'eureka.applier.failedToRefreshToolbox',
-            default: 'Failed to refresh toolbox: workspace is undefined'
-        }));
-    }
-    workspace.getToolbox().refreshSelection();
-    workspace.toolboxRefreshEnabled_ = true;
+    
+    refreshToolbox(workspace, isModernBlockly);
 }
 
 /**

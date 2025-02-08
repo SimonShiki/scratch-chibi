@@ -20,6 +20,7 @@ interface DucktypedUnsupportedAPI {
 
 interface DucktypedToolbox {
     refreshSelection(): void;
+    forceRerender?(): void;
 }
 
 interface DucktypedTarget {
