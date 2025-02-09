@@ -714,16 +714,19 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
                 {
                     _convertButtonForScratchBlocks (originalMethod, buttonInfo, categoryInfo) {
                         if (ctx.blocks && buttonInfo.func && !predefinedCallbackKeys.includes(buttonInfo.func)) {
-                            const workspace = window.Blockly.getMainWorkspace();
+                            const workspace = ctx.blocks.getMainWorkspace?.();
                             const extensionMessageContext = this.makeMessageContextForTarget();
                             const buttonText = maybeFormatMessage(buttonInfo.text, extensionMessageContext)!;
 
+                            // Spork remove the category info
+                            const categoryId = categoryInfo?.id ?? 'eurekaInternal';
+
                             workspace.registerButtonCallback(
-                                `${categoryInfo.id}_${buttonInfo.func}`, buttonInfo.callFunc);
+                                `${categoryId}_${buttonInfo.func}`, buttonInfo.callFunc);
                             return {
                                 info: buttonInfo,
                                 // eslint-disable-next-line max-len
-                                xml: `<button text="${xmlEscape(buttonText)}" callbackKey="${xmlEscape(`${categoryInfo.id}_${buttonInfo.func}`)}"></button>`
+                                xml: `<button text="${xmlEscape(buttonText)}" callbackKey="${xmlEscape(`${categoryId}_${buttonInfo.func}`)}"></button>`
                             };
                         }
                         return originalMethod?.(buttonInfo, categoryInfo);

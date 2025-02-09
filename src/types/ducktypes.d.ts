@@ -98,7 +98,7 @@ interface DucktypedVM {
         _registerExtensionPrimitives (info: ExtensionMetadata): void;
         _refreshExtensionPrimitives (info: ExtensionMetadata): void;
         _convertForScratchBlocks (info: ExtensionBlockMetadata, categoryInfo: CategoryInfo): ConvertedBlockInfo;
-        _convertButtonForScratchBlocks (info: ExtensionBlockMetadata, categoryInfo: CategoryInfo): ConvertedBlockInfo;
+        _convertButtonForScratchBlocks (info: ExtensionBlockMetadata, categoryInfo?: CategoryInfo): ConvertedBlockInfo;
         getEditingTarget (): any;
         getTargetForStage (): any;
         renderer: any;
