@@ -179,7 +179,11 @@ export function applyPatchesForBlocks (blocks?: DucktypedScratchBlocks) {
             }
         }
     } else if (settings.mixins['blocks.getMainWorkspace().toolboxCategoryCallbacks_.PROCEDURE']) {
+        // Eureka cannot capture the real Blockly instance, try using global Blockly instance
         const toolboxCallbacks = globalThis.Blockly?.getMainWorkspace()?.toolboxCategoryCallbacks_;
+        if (!toolboxCallbacks) {
+            return;
+        }
         MixinApplicator.applyTo(
             toolboxCallbacks,
             {
@@ -194,7 +198,6 @@ export function applyPatchesForBlocks (blocks?: DucktypedScratchBlocks) {
     }
 
     const workspace = (blocks ?? globalThis.Blockly).getMainWorkspace?.();
-    
     refreshToolbox(workspace, isModernBlockly);
 }
 
@@ -713,8 +716,8 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
                 vm.runtime,
                 {
                     _convertButtonForScratchBlocks (originalMethod, buttonInfo, categoryInfo) {
-                        if (ctx.blocks && buttonInfo.func && !predefinedCallbackKeys.includes(buttonInfo.func)) {
-                            const workspace = ctx.blocks.getMainWorkspace?.();
+                        const workspace = (ctx.blocks ?? globalThis.Blockly).getMainWorkspace?.();
+                        if (workspace && buttonInfo.func && !predefinedCallbackKeys.includes(buttonInfo.func)) {
                             const extensionMessageContext = this.makeMessageContextForTarget();
                             const buttonText = maybeFormatMessage(buttonInfo.text, extensionMessageContext)!;
 
