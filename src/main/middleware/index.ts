@@ -319,7 +319,7 @@ function prepareBlockInfo (extensionObject: StandardScratchExtensionClass, block
                 log.warn(`Could not find extension block function called ${funcName}`);
             }
             return (args: BlockArgs, util: DucktypedBlockUtility, realBlockInfo: unknown) =>
-            // @ts-expect-error treat it as callable
+                // @ts-expect-error treat it as callable
                 extensionObject[funcName](args, util, realBlockInfo);
         })();
 
@@ -532,5 +532,5 @@ eureka.load = (url: string) => {
     if (loadedExtensions.has(url)) return;
 
     eureka.declaredIds.push(url);
-    forwardedLoadExtensionURL(url);
+    return forwardedLoadExtensionURL(url);
 };

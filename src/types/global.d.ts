@@ -12,7 +12,7 @@ interface EurekaContext {
     blocks?: DucktypedScratchBlocks | undefined;
     openDashboard?(status?: DashboardStatus): void;
     closeDashboard?(): void;
-    load?(url: string): void;
+    load?(url: string): Promise<void>;
 }
 
 /* eslint-disable no-var */
