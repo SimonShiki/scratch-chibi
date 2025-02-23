@@ -58,7 +58,7 @@ function getExtensionIdForOpcode (opcode: string): string {
 
     // Allowed ID characters are those matching the regular expression [\w-]: A-Z, a-z, 0-9, and hyphen ("-").
     const index = opcode.indexOf('_');
-    
+
     // If '_' is not found, return undefined
     if (index === -1) {
         return '';
@@ -66,7 +66,7 @@ function getExtensionIdForOpcode (opcode: string): string {
 
     const forbiddenSymbols = /[^\w-]/g;
     const prefix = opcode.substring(0, index).replace(forbiddenSymbols, '-');
-    
+
     // Return prefix only if it's not empty
     if (prefix !== '') {
         return prefix;
@@ -281,8 +281,16 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
             vm.extensionManager,
             {
                 async refreshBlocks (originalMethod, optExtensionId) {
-                    const result = await originalMethod?.(optExtensionId);
-                    return [...result, refreshForwardedBlocks()];
+                    if (optExtensionId) {
+                        if (refreshForwardedBlocks(optExtensionId)) {
+                            return Promise.resolve();
+
+                        }
+                        return originalMethod?.(optExtensionId);
+                    }
+                    const result = await originalMethod?.(optExtensionId) as void[];
+                    refreshForwardedBlocks();
+                    return result;
                 }
             }
         );
@@ -296,7 +304,7 @@ export function applyPatchesForVM (vm: DucktypedVM, ctx: EurekaContext) {
                 toJSON (originalMethod, optTargetId) {
                     const origJSON = originalMethod?.(optTargetId);
                     const obj = JSON.parse(origJSON);
-                    
+
                     // Create a Record of extension's id - extension's url from loadedExtensions
                     const extensionInfo: Record<string, string> = {};
                     loadedExtensions.forEach(({info}, url) => {

@@ -464,7 +464,16 @@ function makeScratchObject (ctx: EurekaContext): ExtendedScratchObject {
 /**
  * Refresh the forwarded blocks.
  */
-export function refreshForwardedBlocks () {
+export function refreshForwardedBlocks (optExtensionId?: string) {
+    if (optExtensionId) {
+        const url = eureka.idToURLMapping.get(optExtensionId);
+        if (!url) return false;
+        const {extension} = loadedExtensions.get(url);
+        const info = prepareExtensionInfo(extension, extension.getInfo());
+        eureka.vm.runtime._refreshExtensionPrimitives(info);
+        loadedExtensions.set(url, {extension, info});
+        return true;
+    }
     loadedExtensions.forEach(({extension}, url) => {
         const info = prepareExtensionInfo(extension, extension.getInfo());
         eureka.vm.runtime._refreshExtensionPrimitives(info);
