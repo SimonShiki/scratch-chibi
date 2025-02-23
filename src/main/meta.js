@@ -9,7 +9,7 @@
 // @match       https://www.ccw.site/*
 // @match       https://gitblock.cn/*
 // @match       https://world.xiaomawang.com/*
-// @match       https://cocrea.world/*
+// @match       https://www.cocrea.world/*
 // @match       https://create.codelab.club/*
 // @match       https://addon.codelab.club/*
 // @match       https://www.scratch-cn.cn/*
@@ -29,7 +29,7 @@
 // @grant       none
 // @version     process.env.VERSION
 // @author      process.env.AUTHOR
-// @require     
+// @require
 // @updateURL   https://github.com/EurekaScratch/eureka/releases/latest/download/eureka-meta.user.js
 // @downloadURL   https://github.com/EurekaScratch/eureka/releases/latest/download/eureka.user.js
 // ==/UserScript==
